@@ -113,6 +113,52 @@ def mapping_example():
     # Map the function over the collection.
     ndviCollection = collection.map(addNDVI);
 
+
+# NOTE: sort_feature has to be deafulted to None, but idk what happens if sorted on empty string
+# NOTE: Unsure of what a "scene" is
+def get_median_composite(path_to_collection, start_date, end_date, coord_point, sort_feature, num_of_scenes):
+
+    """
+        Reduce Image Collection to create a median composite over a # of images
+        over a date range
+
+        Args:
+        path_to_collection (str): Path to image collection
+        start_date (str): Start date for date range for image collection in the format
+            '<YEAR>-<MONTH>-<DAY>'
+        end_date (str): End date for date range for image collection
+            '<YEAR>-<MONTH>-<DAY>'
+
+        coord_point (tup): Coordinate geometry point for data extraction (<LATITUDE>, <LONGITUDE>)
+
+        sort_feature (str): Sort data based on dataset feature
+
+    """
+
+    # Load a Landsat 8 collection.
+    collection = ee.ImageCollection(path_to_collection)
+    # Filter by date and location.
+    collection = collection.filterBounds(ee.Geometry.Point(coord_point[0], coord_point[1])).filterDate(start_date, end_date)
+    # Sort by increasing cloudiness.
+    collection = collection.sort('CLOUD_COVER')
+
+    # Compute the median of each pixel for each band of the 5 least cloudy scenes.
+    median = collection.limit(5).reduce(ee.Reducer.median());
+
+"""
+    // Load a Landsat 8 collection.
+var collection = ee.ImageCollection('LANDSAT/LC08/C01/T1')
+  // Filter by date and location.
+  .filterBounds(ee.Geometry.Point(-122.262, 37.8719))
+  .filterDate('2014-01-01', '2014-12-31')
+  // Sort by increasing cloudiness.
+  .sort('CLOUD_COVER');
+
+//
+var median = collection.limit(5).reduce(ee.Reducer.median());
+
+"""
+
 # def get_polygon_data():
 #     # NOTE: Method from Sam, to extract data from polygon. Refactored from
 #     # EE Code Editor to Python. Currently not working.
