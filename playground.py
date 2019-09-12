@@ -249,7 +249,7 @@ def get_polygon_data():
       print(csv_data)
 
 def compute_data(point, image, polygon,):
-    """ Helper function to compute data per point """
+    """ Helper function to compute data per point for get_polygon_data"""
 
     p = ee.Geometry.Point(point)
     dataPoint = image
