@@ -154,17 +154,16 @@ def get_median_composite(path_to_collection, start_date, end_date, coord_point, 
 def get_region_stat(path_to_collection):
 
     # Load and display a Landsat TOA image.
-    image = ee.Image(path_to_collection);
+    image = ee.Image(path_to_collection)
     # Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], max: 0.3});
 
     # Create an arbitrary rectangle as a region and display it.
-    region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413);
+    region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
     # Map.addLayer(region);
 
     reducer = ee.Reducer.toList()
     geometry = region
     scale = 30
-
 
     # alt = SRTM.reduceRegion(reducer=ee.Reducer.mean(), geometry=studyarea.centroid()).get('be75').getInfo()
 
@@ -189,15 +188,17 @@ def get_polygon_data():
     srtm = ee.Image(collection.first()).clip(polygon)
     # //var srtm = ee.Image('CGIAR/SRTM90_V4');
 
-    print(srtm)
+    # Polygon region
+    region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
 
 
+    meanDict = srtm.reduceRegion(reducer=ee.Reducer.toList(), geometry=region, scale=30)
     # Compute the mean elevation in the polygon.
-    meanDict = srtm.reduceRegion({
-    reducer: ee.Reducer.toList(),
-    geometry: polygon,
-    scale: scale_value
-    });
+    # meanDict = srtm.reduceRegion({
+    # reducer: ee.Reducer.toList(),
+    # geometry: polygon,
+    # scale: scale_value
+    # });
 
     print('meanDict', meanDict);
 
@@ -216,12 +217,18 @@ def get_polygon_data():
     latlon = ee.Image.pixelLonLat().reproject(proj)
     # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
 
+
+    coords = latlon.select(['longitude', 'latitude'])
+    .reduceRegion(reducer=ee.Reducer.toList(),
+    geometry=region,
+    scale=30)
+
     # put each lon lat in a list
-    coords = latlon.select(['longitude', 'latitude']).reduceRegion({
-        reducer: ee.Reducer.toList(),
-        geometry: polygon,
-        scale: scale_value
-      })
+    # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
+    #     reducer: ee.Reducer.toList(),
+    #     geometry: polygon,
+    #     scale: scale_value
+    #   })
 
     # get lat & lon
     lat = ee.List(coords.get('latitude'))
@@ -235,36 +242,36 @@ def get_polygon_data():
     print(point_list.length)
 
 
-    # NOTE: Need to refactor to python
-    computeData = function(point){
-        p = ee.Geometry.Point(point)
-        dataPoint = srtm
-        .select(bands)
-        .reduceRegion(ee.Reducer.first(),p,scale_value)
-        .get(bands)
-
-        return [point,ee.Number(dataPoint)]
-      }
+    computed_data =
 
       csv_data = point_list.map(computeData)
       return csv_data
       print(csv_data)
 
+def compute_data(point, image, polygon,):
+    """ Helper function to compute data per point """
 
+    p = ee.Geometry.Point(point)
+    dataPoint = image
+    .select(bands)
+    .reduceRegion(ee.Reducer.first(),p,scale_value)
+    .get(bands)
+
+    return [point,ee.Number(dataPoint)]
 
 
 if __name__ == "__main__":
     print(get_region_stat('LANDSAT/LC08/C01/T1_TOA/LC08_044034_20140318').get('CLOUD_COVER'))
 
 
-# print(filter_and_sort())
+    # print(filter_and_sort())
 
-# get_polygon_data()
-
-
-# print_elevation_ME()
-# print_obj_info()
+    # get_polygon_data()
 
 
-# test_get_image_metadata()
-# get_polygon_data()
+    # print_elevation_ME()
+    # print_obj_info()
+
+
+    # test_get_image_metadata()
+    # get_polygon_data()
