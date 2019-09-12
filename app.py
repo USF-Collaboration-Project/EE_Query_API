@@ -1,13 +1,22 @@
+# Server imports
+from flask import Flask, render_template, request, redirect
+import requests
+# Earth Engine import and initialization
 import ee
+# Trigger the authentication flow.
+# ee.Authenticate()
 ee.Initialize()
 
 
+app = Flask(__name__)
+
+
+@app.route('/')
 
 # NOTE: sort_feature has to be deafulted to None, but idk what happens if sorted on empty string
 # NOTE: Unsure of what a "scene" is
 # NOTE: Refactored based on Reducing section from https://developers.google.com/earth-engine/getstarted
 def get_median_composite(path_to_collection, start_date, end_date, coord_point, num_of_scenes, sort_feature=''):
-
     """
         Reduce Image Collection to create a median composite over a # of images
         over a date range
@@ -24,7 +33,6 @@ def get_median_composite(path_to_collection, start_date, end_date, coord_point, 
         sort_feature (str): Sort data based on dataset feature
 
         num_of_scenes: (int): Number of scences to limit reduction to
-
     """
 
     # Load a Landsat 8 collection.
@@ -40,3 +48,7 @@ def get_median_composite(path_to_collection, start_date, end_date, coord_point, 
     return median
 
 print(get_median_composite('LANDSAT/LC08/C01/T1', '2014-01-01', '2014-12-31', (-122.262, 37.8719), 5, sort_feature='CLOUD_COVER'))
+
+
+if __name__ == "__main__":
+    app.run(degbug=True, port=5000)

@@ -114,84 +114,147 @@ def mapping_example():
     ndviCollection = collection.map(addNDVI);
 
 
+def get_median_composite(path_to_collection, start_date, end_date, coord_point, num_of_scenes, sort_feature=''):
 
-# def get_polygon_data():
-#     # NOTE: Method from Sam, to extract data from polygon. Refactored from
-#     # EE Code Editor to Python. Currently not working.
-#     """ Extract data from image to csv """
-#
-#     scale_value = 1000;
-#     bands = "tmmn"
-#     nameOfArea = "polygon"
-#
-#     # Load the SRTM image.
-#     collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterBounds(polygon);
-#
-#     # TEST IMAGE
-#     srtm = ee.Image(collection.first()).clip(polygon)
-#     # //var srtm = ee.Image('CGIAR/SRTM90_V4');
-#
-#     print(srtm)
-#
-#
-#     # Compute the mean elevation in the polygon.
-#     meanDict = srtm.reduceRegion({
-#     reducer: ee.Reducer.toList(),
-#     geometry: polygon,
-#     scale: scale_value
-#     });
-#
-#     print('meanDict', meanDict);
-#
-#     # Get the mean from the dictionary and print it.
-#     mean = meanDict.get('elevation');
-#     print('Mean elevation', mean);
-#
-#
-#     # TEST IMAGE
-#     first = srtm.clip(polygon);
-#
-#     # get image projection
-#     proj = first.select([0]).projection();
-#
-#     # get coordinates image
-#     latlon = ee.Image.pixelLonLat().reproject(proj)
-#     # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
-#
-#     # put each lon lat in a list
-#     coords = latlon.select(['longitude', 'latitude']).reduceRegion({
-#         reducer: ee.Reducer.toList(),
-#         geometry: polygon,
-#         scale: scale_value
-#       })
-#
-#     # get lat & lon
-#     lat = ee.List(coords.get('latitude'))
-#     lon = ee.List(coords.get('longitude'))
-#
-#     # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
-#     point_list = lon.zip(lat)
-#     print('point list', point_list)
-#     csv_data = []
-#
-#     print(point_list.length)
-#
-#
-#     # NOTE: Need to refactor to python
-#     computeData = function(point){
-#         p = ee.Geometry.Point(point)
-#         dataPoint = srtm
-#         .select(bands)
-#         .reduceRegion(ee.Reducer.first(),p,scale_value)
-#         .get(bands)
-#
-#         return [point,ee.Number(dataPoint)]
-#       }
-#
-#       csv_data = point_list.map(computeData)
-#       return csv_data
-#       print(csv_data)
+    """
+        Reduce Image Collection to create a median composite over a # of images
+        over a date range
 
+        Args:
+        path_to_collection (str): Path to image collection
+        start_date (str): Start date for date range for image collection in the format
+            '<YEAR>-<MONTH>-<DAY>'
+        end_date (str): End date for date range for image collection
+            '<YEAR>-<MONTH>-<DAY>'
+
+        coord_point (tup): Coordinate geometry point for data extraction (<LATITUDE>, <LONGITUDE>)
+
+        sort_feature (str): Sort data based on dataset feature
+
+        num_of_scenes: (int): Number of scences to limit reduction to
+
+    """
+
+    # Load a Landsat 8 collection.
+    collection = ee.ImageCollection(path_to_collection)
+    # Filter by date and location.
+    collection = collection.filterBounds(ee.Geometry.Point(coord_point[0], coord_point[1])).filterDate(start_date, end_date)
+    # Sort by increasing cloudiness.
+    collection = collection.sort(sort_feature)
+
+    # Compute the median of each pixel for each band of the 5 least cloudy scenes.
+    median = collection.limit(num_of_scenes).reduce(ee.Reducer.median());
+
+    return median
+
+# print(get_median_composite('LANDSAT/LC08/C01/T1', '2014-01-01', '2014-12-31', (-122.262, 37.8719), 5, sort_feature='CLOUD_COVER'))
+
+
+
+def get_region_stat(path_to_collection):
+
+    # Load and display a Landsat TOA image.
+    image = ee.Image(path_to_collection);
+    # Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], max: 0.3});
+
+    # Create an arbitrary rectangle as a region and display it.
+    region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413);
+    # Map.addLayer(region);
+
+    reducer = ee.Reducer.toList()
+    geometry = region
+    scale = 30
+
+
+    # alt = SRTM.reduceRegion(reducer=ee.Reducer.mean(), geometry=studyarea.centroid()).get('be75').getInfo()
+
+    mean = image.reduceRegion(reducer=reducer, geometry=region, scale=scale)
+
+    return mean
+
+
+def get_polygon_data():
+    # NOTE: Method from Sam, to extract data from polygon. Refactored from
+    # EE Code Editor to Python. Currently not working.
+    """ Extract data from image to csv """
+
+    scale_value = 1000;
+    bands = "tmmn"
+    nameOfArea = "polygon"
+
+    # Load the SRTM image.
+    collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterBounds(polygon);
+
+    # TEST IMAGE
+    srtm = ee.Image(collection.first()).clip(polygon)
+    # //var srtm = ee.Image('CGIAR/SRTM90_V4');
+
+    print(srtm)
+
+
+    # Compute the mean elevation in the polygon.
+    meanDict = srtm.reduceRegion({
+    reducer: ee.Reducer.toList(),
+    geometry: polygon,
+    scale: scale_value
+    });
+
+    print('meanDict', meanDict);
+
+    # Get the mean from the dictionary and print it.
+    mean = meanDict.get('elevation');
+    print('Mean elevation', mean);
+
+
+    # TEST IMAGE
+    first = srtm.clip(polygon);
+
+    # get image projection
+    proj = first.select([0]).projection();
+
+    # get coordinates image
+    latlon = ee.Image.pixelLonLat().reproject(proj)
+    # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
+
+    # put each lon lat in a list
+    coords = latlon.select(['longitude', 'latitude']).reduceRegion({
+        reducer: ee.Reducer.toList(),
+        geometry: polygon,
+        scale: scale_value
+      })
+
+    # get lat & lon
+    lat = ee.List(coords.get('latitude'))
+    lon = ee.List(coords.get('longitude'))
+
+    # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
+    point_list = lon.zip(lat)
+    print('point list', point_list)
+    csv_data = []
+
+    print(point_list.length)
+
+
+    # NOTE: Need to refactor to python
+    computeData = function(point){
+        p = ee.Geometry.Point(point)
+        dataPoint = srtm
+        .select(bands)
+        .reduceRegion(ee.Reducer.first(),p,scale_value)
+        .get(bands)
+
+        return [point,ee.Number(dataPoint)]
+      }
+
+      csv_data = point_list.map(computeData)
+      return csv_data
+      print(csv_data)
+
+
+
+
+if __name__ == "__main__":
+    print(get_region_stat('LANDSAT/LC08/C01/T1_TOA/LC08_044034_20140318').get('CLOUD_COVER'))
 
 
 # print(filter_and_sort())
