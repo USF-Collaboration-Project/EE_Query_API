@@ -101,40 +101,42 @@ def get_data_from_image():
 
     # Get the mean from the dictionary and print it.
     mean = meanDict.get('elevation');
-    print('Mean elevation', mean);
+    # print('Mean elevation', mean);
 
-    return str(mean)
 
     # # TEST IMAGE
-    # first = srtm.clip(polygon);
-    #
-    # # get image projection
-    # proj = first.select([0]).projection();
-    #
-    # # get coordinates image
-    # latlon = ee.Image.pixelLonLat().reproject(proj)
-    # # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
-    #
-    #
-    # coords = latlon.select(['longitude', 'latitude']).reduceRegion(reducer=ee.Reducer.toList(),
-    # geometry=region,
-    # scale=30)
-    #
-    # # put each lon lat in a list
-    # # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
-    # #     reducer: ee.Reducer.toList(),
-    # #     geometry: polygon,
-    # #     scale: scale_value
-    # #   })
-    #
-    # # get lat & lon
-    # lat = ee.List(coords.get('latitude'))
-    # lon = ee.List(coords.get('longitude'))
-    #
-    # # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
-    # point_list = lon.zip(lat)
-    # print('point list', point_list)
-    # csv_data = []
+    first = srtm.clip(polygon);
+
+    # get image projection
+    proj = first.select([0]).projection();
+
+    # get coordinates image
+    latlon = ee.Image.pixelLonLat().reproject(proj)
+    # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
+
+
+    coords = latlon.select(['longitude', 'latitude']).reduceRegion(reducer=ee.Reducer.toList(),
+    geometry=region,
+    scale=30)
+
+    # put each lon lat in a list
+    # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
+    #     reducer: ee.Reducer.toList(),
+    #     geometry: polygon,
+    #     scale: scale_value
+    #   })
+
+    # get lat & lon
+    lat = ee.List(coords.get('latitude'))
+    lon = ee.List(coords.get('longitude'))
+
+    # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
+    point_list = lon.zip(lat)
+    print('point list', point_list)
+    csv_data = []
+
+
+    return str(point_list)
 
 
 
