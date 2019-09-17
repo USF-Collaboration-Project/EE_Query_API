@@ -62,25 +62,21 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
 
     # return str(band_names)
 
-@app.route('/get_data', methods=['GET', 'POST'])
+@app.route('/get_data', methods=['GET','POST'])
 def get_data_from_image():
-    print("In route \n\n")
-    # print(request)
 
-    return jsonify(request.json)
-    image_name = request.imageName
-    print(image_name)
-    # print(f"image name {image_name}")
 
-    if request.method == 'post':
-        return 'form was submitted'
-        # try:
-        #     image_name = request.args["body"]["imageName"]
-        # except:
-        #     image_name = 'IMAGENAME'
-        #
-        # print(image_name)
-        # return f"This is image name: {image_name}"
+    image_name = request.json.get('imageName')
+    # print(f"image name: {image_name}")
+
+
+    try:
+        image_name = request.args["body"]["imageName"]
+    except:
+        image_name = 'IMAGENAME'
+    #
+    # print(image_name)
+    # return f"This is image name: {image_name}"
 
     return 'Form was not submitted'
 
@@ -161,7 +157,7 @@ def get_data_from_image():
 
 
 
-#
+
 # # NOTE: sort_feature has to be deafulted to None, but idk what happens if sorted on empty string
 # # NOTE: Unsure of what a "scene" is
 # # NOTE: Refactored based on Reducing section from https://developers.google.com/earth-engine/getstarted
