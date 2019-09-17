@@ -73,72 +73,68 @@ def get_data_from_image():
     image_name = request.json.get('imageName')
     # print(f"image name: {image_name}")
 
+    image_data = ee.ImageCollection(image_name).filterBounds(polygon)
 
-    # Load the SRTM image.
-    try:
-        collection = ee.ImageCollection(image_name).filterBounds(polygon)
-    except:
-        collection = ee.Image(image_name).filterBounds(polygon)
+    # Load the SRTM image. Handling error for image vs image collection
+    # try:
+    #     image_data = ee.ImageCollection(image_name).filterBounds(polygon)
+    # except:
+    #     image_data = ee.Image(image_name).filterBounds(polygon)
 
 
     # TEST IMAGE
-    srtm = ee.Image(collection.first()).clip(polygon)
+    srtm = ee.Image(image_data.first()).clip(polygon)
     # //var srtm = ee.Image('CGIAR/SRTM90_V4');
 
     # Polygon region
     region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
 
 
-    meanDict = srtm.reduceRegion(reducer=ee.Reducer.toList(), geometry=region, scale=30)
-
+    # meanDict = srtm.reduceRegion(reducer=ee.Reducer.toList(), geometry=region, scale=30)
 
 
     # Compute the mean elevation in the polygon.
-    meanDict = srtm.reduceRegion({
-    reducer: ee.Reducer.toList(),
-    geometry: polygon,
-    scale: scale_value
-    });
+    meanDict = srtm.reduceRegion( reducer= ee.Reducer.toList(), geometry= polygon, scale= scale_value)
 
-    return meanDict
+    # print('meanDict:', meanDict)
 
-    print('meanDict', meanDict);
 
     # Get the mean from the dictionary and print it.
     mean = meanDict.get('elevation');
     print('Mean elevation', mean);
 
+    return str(mean)
 
-    # TEST IMAGE
-    first = srtm.clip(polygon);
-
-    # get image projection
-    proj = first.select([0]).projection();
-
-    # get coordinates image
-    latlon = ee.Image.pixelLonLat().reproject(proj)
-    # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
-
-
-    coords = latlon.select(['longitude', 'latitude']).reduceRegion(reducer=ee.Reducer.toList(),
-    geometry=region,
-    scale=30)
-
-    # put each lon lat in a list
-    # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
-    #     reducer: ee.Reducer.toList(),
-    #     geometry: polygon,
-    #     scale: scale_value
-    #   })
-
-    # get lat & lon
-    lat = ee.List(coords.get('latitude'))
-    lon = ee.List(coords.get('longitude'))
-
-    # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
-    point_list = lon.zip(lat)
-    print('point list', point_list)
-    csv_data = []
+    # # TEST IMAGE
+    # first = srtm.clip(polygon);
+    #
+    # # get image projection
+    # proj = first.select([0]).projection();
+    #
+    # # get coordinates image
+    # latlon = ee.Image.pixelLonLat().reproject(proj)
+    # # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
+    #
+    #
+    # coords = latlon.select(['longitude', 'latitude']).reduceRegion(reducer=ee.Reducer.toList(),
+    # geometry=region,
+    # scale=30)
+    #
+    # # put each lon lat in a list
+    # # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
+    # #     reducer: ee.Reducer.toList(),
+    # #     geometry: polygon,
+    # #     scale: scale_value
+    # #   })
+    #
+    # # get lat & lon
+    # lat = ee.List(coords.get('latitude'))
+    # lon = ee.List(coords.get('longitude'))
+    #
+    # # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
+    # point_list = lon.zip(lat)
+    # print('point list', point_list)
+    # csv_data = []
 
 
 
