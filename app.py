@@ -69,22 +69,20 @@ def get_data_from_image():
     scale_value = 1000
     nameOfArea = "polygon"
 
-
+    # Extract image or image collection name from request
     image_name = request.json.get('imageName')
-    # print(f"image name: {image_name}")
 
-    image_data = ee.ImageCollection(image_name).filterBounds(polygon)
 
     # Load the SRTM image. Handling error for image vs image collection
-    # try:
-    #     image_data = ee.ImageCollection(image_name).filterBounds(polygon)
-    # except:
-    #     image_data = ee.Image(image_name).filterBounds(polygon)
+    try:
+        image_data = ee.ImageCollection(image_name).filterBounds(polygon)
+        # load image
+        srtm = ee.Image(image_data.first()).clip(polygon)
+    except:
+        image_data = ee.Image(image_name).filterBounds(polygon)
+        # load first image from collection
+        srtm = ee.Image(image_data).clip(polygon)
 
-
-    # TEST IMAGE
-    srtm = ee.Image(image_data.first()).clip(polygon)
-    # //var srtm = ee.Image('CGIAR/SRTM90_V4');
 
     # Polygon region
     region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
@@ -119,12 +117,6 @@ def get_data_from_image():
     geometry=region,
     scale=30)
 
-    # put each lon lat in a list
-    # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
-    #     reducer: ee.Reducer.toList(),
-    #     geometry: polygon,
-    #     scale: scale_value
-    #   })
 
     # get lat & lon
     lat = ee.List(coords.get('latitude'))
@@ -136,6 +128,7 @@ def get_data_from_image():
     csv_data = []
 
 
+    # TODO: format data to return JSON
     return str(point_list)
 
 
