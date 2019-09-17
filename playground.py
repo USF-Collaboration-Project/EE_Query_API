@@ -10,6 +10,8 @@ https://github.com/google/earthengine-api/tree/master/python/examples/py/Image
 # Import the Earth Engine library.
 import ee
 
+from pprint import pprint
+
 # Trigger the authentication flow.
 # ee.Authenticate()
 
@@ -145,9 +147,10 @@ def get_median_composite(path_to_collection, start_date, end_date, coord_point, 
     # Compute the median of each pixel for each band of the 5 least cloudy scenes.
     median = collection.limit(num_of_scenes).reduce(ee.Reducer.median());
 
-    return median
 
-# print(get_median_composite('LANDSAT/LC08/C01/T1', '2014-01-01', '2014-12-31', (-122.262, 37.8719), 5, sort_feature='CLOUD_COVER'))
+    # pprint(median.getInfo())
+
+    # print(get_median_composite('LANDSAT/LC08/C01/T1', '2014-01-01', '2014-12-31', (-122.262, 37.8719), 5, sort_feature='CLOUD_COVER'))
 
 
 
@@ -178,7 +181,7 @@ def get_polygon_data():
     """ Extract data from image to csv """
 
     scale_value = 1000;
-    bands = "tmmn"
+    # bands = "tmmn"
     nameOfArea = "polygon"
 
     # Load the SRTM image.
@@ -188,17 +191,26 @@ def get_polygon_data():
     srtm = ee.Image(collection.first()).clip(polygon)
     # //var srtm = ee.Image('CGIAR/SRTM90_V4');
 
+    try:
+        image_data = ee.ImageCollection(image_name).filterBounds(polygon)
+    except:
+        image_data = ee.Image(image_name).filterBounds(polygon)
+
+
     # Polygon region
     region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
 
 
     meanDict = srtm.reduceRegion(reducer=ee.Reducer.toList(), geometry=region, scale=30)
+
+
+
     # Compute the mean elevation in the polygon.
-    # meanDict = srtm.reduceRegion({
-    # reducer: ee.Reducer.toList(),
-    # geometry: polygon,
-    # scale: scale_value
-    # });
+    meanDict = srtm.reduceRegion({
+    reducer: ee.Reducer.toList(),
+    geometry: polygon,
+    scale: scale_value
+    });
 
     print('meanDict', meanDict);
 
@@ -239,29 +251,31 @@ def get_polygon_data():
     print('point list', point_list)
     csv_data = []
 
-    print(point_list.length)
+    # print(point_list.length)
 
 
-    computed_data =
+    # computed_data =
+    #
+    #   csv_data = point_list.map(computeData)
+    #   return csv_data
+    #   print(csv_data)
 
-      csv_data = point_list.map(computeData)
-      return csv_data
-      print(csv_data)
-
-def compute_data(point, image, polygon,):
-    """ Helper function to compute data per point for get_polygon_data"""
-
-    p = ee.Geometry.Point(point)
-    dataPoint = image
-    .select(bands)
-    .reduceRegion(ee.Reducer.first(),p,scale_value)
-    .get(bands)
-
-    return [point,ee.Number(dataPoint)]
+# def compute_data(point, image, polygon,):
+#     """ Helper function to compute data per point for get_polygon_data"""
+#
+#     p = ee.Geometry.Point(point)
+#     dataPoint = image
+#     .select(bands)
+#     .reduceRegion(ee.Reducer.first(),p,scale_value)
+#     .get(bands)
+#
+#     return [point,ee.Number(dataPoint)]
 
 
 if __name__ == "__main__":
-    print(get_region_stat('LANDSAT/LC08/C01/T1_TOA/LC08_044034_20140318').get('CLOUD_COVER'))
+
+    print(get_polygon_data())
+    # print(get_region_stat('LANDSAT/LC08/C01/T1_TOA/LC08_044034_20140318').get('CLOUD_COVER'))
 
 
     # print(filter_and_sort())

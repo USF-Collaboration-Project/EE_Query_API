@@ -1,0 +1,85 @@
+<head>
+  <style>
+    #results{
+      display: grid;
+      grid-template-columns: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="queries">
+    <select id="imageQuery">
+    </select>
+    <button id="submitQuery">Submit Query</button>
+  </div>
+  <div id = "results">
+  </div>
+
+</body>
+
+<script>
+
+  console.log("Hello world")
+  const images = ["IDAHO_EPSCOR/GRIDMET", "CGIAR/SRTM90_V4"]
+
+  const imageQ = document.getElementById("imageQuery")
+  const submitQuery = document.getElementById("submitQuery")
+
+  for(let i = 0; i < images.length; i ++){
+    const newOption = document.createElement("option")
+    newOption.innerHTML = images[i]
+    imageQ.appendChild(newOption)
+  }
+
+  const resultDiv = document.getElementById("results")
+
+  submitQuery.addEventListener("click", (e) => {
+
+    e.preventDefault()
+
+    const toSubmit = imageQ.value
+    console.log(toSubmit)
+    const results = getData(toSubmit)
+    for(let i = 0; i < Math.min(results.length, 10); i++){
+      const newDataPoint = document.createElement("div")
+      newDataPoint.innerHTML = results[i]
+      resultDiv.appendChild(newDataPoint)
+    }
+  })
+
+  function getBands(value){
+
+    console.log(value)
+    return ["tmmn", "tmmx", "pr", "elev"]
+  }
+
+  function getData(value){
+
+    const options = {
+      method: 'post',
+      body: JSON.stringify({
+        imageName: value
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }
+
+    console.log(options)
+
+    fetch('/get_data', options).then((res) => {
+      return res.json()
+    }).then((json) => {
+      console.log(json)
+    }).catch((err) => {
+      console.log('-- Error --')
+      console.log(err.message)
+      return ["Error"]
+    })
+
+    return []
+  }
+
+</script>
