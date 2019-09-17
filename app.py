@@ -65,95 +65,80 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
 @app.route('/get_data', methods=['GET','POST'])
 def get_data_from_image():
 
+    # static values
+    scale_value = 1000
+    nameOfArea = "polygon"
+
 
     image_name = request.json.get('imageName')
     # print(f"image name: {image_name}")
 
 
+    # Load the SRTM image.
     try:
-        image_name = request.args["body"]["imageName"]
+        collection = ee.ImageCollection(image_name).filterBounds(polygon)
     except:
-        image_name = 'IMAGENAME'
-    #
-    # print(image_name)
-    # return f"This is image name: {image_name}"
+        collection = ee.Image(image_name).filterBounds(polygon)
 
-    return 'Form was not submitted'
 
-    # NOTE: Method from Sam, to extract data from polygon. Refactored from
-    # EE Code Editor to Python. Currently not working.
-    # """ Extract data from image to csv """
-    #
-    # scale_value = 1000
-    # nameOfArea = "polygon"
-    #
-    #
-    # # Load the SRTM image.
-    # # NOTE:
-    # try:
-    #     collection = ee.ImageCollection(image_name).filterBounds(polygon)
-    # except:
-    #     collection = ee.Image(image_name).filterBounds(polygon)
-    #
-    #
-    # # TEST IMAGE
-    # srtm = ee.Image(collection.first()).clip(polygon)
-    # # //var srtm = ee.Image('CGIAR/SRTM90_V4');
-    #
-    # # Polygon region
-    # region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
-    #
-    #
-    # meanDict = srtm.reduceRegion(reducer=ee.Reducer.toList(), geometry=region, scale=30)
-    #
-    #
-    #
-    # # Compute the mean elevation in the polygon.
-    # meanDict = srtm.reduceRegion({
-    # reducer: ee.Reducer.toList(),
-    # geometry: polygon,
-    # scale: scale_value
-    # });
-    #
-    # return meanDict
-    #
-    # print('meanDict', meanDict);
+    # TEST IMAGE
+    srtm = ee.Image(collection.first()).clip(polygon)
+    # //var srtm = ee.Image('CGIAR/SRTM90_V4');
 
-    # # Get the mean from the dictionary and print it.
-    # mean = meanDict.get('elevation');
-    # print('Mean elevation', mean);
-    #
-    #
-    # # TEST IMAGE
-    # first = srtm.clip(polygon);
-    #
-    # # get image projection
-    # proj = first.select([0]).projection();
-    #
-    # # get coordinates image
-    # latlon = ee.Image.pixelLonLat().reproject(proj)
-    # # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
-    #
-    #
-    # coords = latlon.select(['longitude', 'latitude']).reduceRegion(reducer=ee.Reducer.toList(),
-    # geometry=region,
-    # scale=30)
-    #
-    # # put each lon lat in a list
-    # # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
-    # #     reducer: ee.Reducer.toList(),
-    # #     geometry: polygon,
-    # #     scale: scale_value
-    # #   })
-    #
-    # # get lat & lon
-    # lat = ee.List(coords.get('latitude'))
-    # lon = ee.List(coords.get('longitude'))
-    #
-    # # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
-    # point_list = lon.zip(lat)
-    # print('point list', point_list)
-    # csv_data = []
+    # Polygon region
+    region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
+
+
+    meanDict = srtm.reduceRegion(reducer=ee.Reducer.toList(), geometry=region, scale=30)
+
+
+
+    # Compute the mean elevation in the polygon.
+    meanDict = srtm.reduceRegion({
+    reducer: ee.Reducer.toList(),
+    geometry: polygon,
+    scale: scale_value
+    });
+
+    return meanDict
+
+    print('meanDict', meanDict);
+
+    # Get the mean from the dictionary and print it.
+    mean = meanDict.get('elevation');
+    print('Mean elevation', mean);
+
+
+    # TEST IMAGE
+    first = srtm.clip(polygon);
+
+    # get image projection
+    proj = first.select([0]).projection();
+
+    # get coordinates image
+    latlon = ee.Image.pixelLonLat().reproject(proj)
+    # Map.addLayer(first, {bands:[bands], min:0, max:500}, 'Image')
+
+
+    coords = latlon.select(['longitude', 'latitude']).reduceRegion(reducer=ee.Reducer.toList(),
+    geometry=region,
+    scale=30)
+
+    # put each lon lat in a list
+    # coords = latlon.select(['longitude', 'latitude']).reduceRegion({
+    #     reducer: ee.Reducer.toList(),
+    #     geometry: polygon,
+    #     scale: scale_value
+    #   })
+
+    # get lat & lon
+    lat = ee.List(coords.get('latitude'))
+    lon = ee.List(coords.get('longitude'))
+
+    # zip them. Example: zip([1, 3],[2, 4]) --> [[1, 2], [3,4]]
+    point_list = lon.zip(lat)
+    print('point list', point_list)
+    csv_data = []
 
 
 
