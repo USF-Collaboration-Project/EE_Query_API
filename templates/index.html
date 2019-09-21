@@ -3,41 +3,45 @@
     #results{
       display: grid;
       grid-template-columns: 100%;
+      font-size: 12px;
+    }
+    tr{
+      margin: 5px 5px;
+    }
+    td{
+      border: 1px solid #000;
+    }
+    th{
+      background-color: #aaa;
+      margin: 5px 5px;
     }
   </style>
 </head>
-
 <body>
   <div id="queries">
     <select id="imageQuery">
     </select>
     <button id="submitQuery">Submit Query</button>
   </div>
-  <div id = "results">
-  </div>
-
+  <h3 id="header"></h3>
+  <button id="downloadButton" disabled = true>download csv</button>
+  <table id = "results">
+  </table>
 </body>
-
 <script>
-
   console.log("Hello world")
   const images = ["IDAHO_EPSCOR/GRIDMET", "CGIAR/SRTM90_V4"]
-
+  const headerNotice = document.getElementById("header")
   const imageQ = document.getElementById("imageQuery")
   const submitQuery = document.getElementById("submitQuery")
-
   for(let i = 0; i < images.length; i ++){
     const newOption = document.createElement("option")
     newOption.innerHTML = images[i]
     imageQ.appendChild(newOption)
   }
-
   const resultDiv = document.getElementById("results")
-
   submitQuery.addEventListener("click", (e) => {
-
     e.preventDefault()
-
     const toSubmit = imageQ.value
     console.log(toSubmit)
     const results = getData(toSubmit)
@@ -47,15 +51,11 @@
       resultDiv.appendChild(newDataPoint)
     }
   })
-
   function getBands(value){
-
     console.log(value)
     return ["tmmn", "tmmx", "pr", "elev"]
   }
-
   function getData(value){
-
     const options = {
       method: 'post',
       body: JSON.stringify({
@@ -66,20 +66,81 @@
         'Content-Type': 'application/json'
       }
     }
-
     console.log(options)
-
-    fetch('/get_data', options).then((res) => {
-      return res.json()
+    fetch('./get_data', options).then((res) => {
+      console.log("RETURNING RESPONSE ******************")
+      console.log(res)
+      return res.text()
     }).then((json) => {
-      console.log(json)
+      const data = JSON.parse(json)
+      document.getElementById("downloadButton").disabled = false
+      document.getElementById("downloadButton").addEventListener("click", function(){
+        download(data)
+      })
+      headerNotice.innerHTML = "Now showing the first " + Math.min(data["lon"].length,15) + " elements of the csv. </br>Click the download button below to download the full file."
+      let keys = Object.keys(data)
+      const headerRow = document.createElement("tr")
+      keys.forEach(key =>{
+        const el = document.createElement("th")
+        el.innerHTML = key
+        headerRow.appendChild(el)
+      })
+      resultDiv.appendChild(headerRow)
+      for(let i = 0; i < Math.min(data["lon"].length, 15); i ++){
+        tableRow = document.createElement("tr")
+        keys.forEach(key =>{
+          const el = document.createElement("td")
+          el.innerHTML = data[key][i]
+          tableRow.appendChild(el)
+        })
+        resultDiv.appendChild(tableRow)
+      }
     }).catch((err) => {
       console.log('-- Error --')
       console.log(err.message)
       return ["Error"]
     })
-
     return []
   }
-
+  function convertToCSV(data, headers) {
+    var str = '';
+    headers.forEach(key => {
+      str += key + ","
+    })
+    str = str.substring(0, str.length - 1) + '\r\n'
+    for (let i = 0; i < data["lon"].length; i++) {
+        var line = '';
+        headers.forEach(key => {
+          line += data[key][i] + ","
+        })
+        line = line.substring(0, line.length - 1)
+        str += line + '\r\n';
+    }
+    return str;
+}
+function exportCSVFile(headers, data, fileTitle) {
+    var csv = convertToCSV(data, headers);
+    var exportedFilename = fileTitle + '.csv' || 'export.csv';
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, exportedFilename);
+    } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", exportedFilename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+function download(data){
+  const headers = Object.keys(data)
+  const fileTitle = 'USF_research';
+  exportCSVFile(headers, data, fileTitle); // call the exportCSVFile() function to process the JSON and trigger the download
+}
 </script>
