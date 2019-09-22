@@ -18,20 +18,23 @@
 
 """
 
-
 # TODO:
 # - Parse State/County GAMD level 2 500k into JSON, CSV, or GoeJSON
 # - Pickle objects and store in a folder hierarchy: (coords --> states ---> county)
 # - Process form submission to make GEE query based on unpickled coordinates 
 
-import pyreadr
+import json
 
-result = pyreadr.read_r('gadm36_USA_0_sp.rds') # also works for Rds
+with open('gadm36_USA_1.json', 'r') as file:
+    data = file.read()
 
-# done! let's see what we got
-# result is a dictionary where keys are the name of objects and the values python
-# objects
-print(result.keys()) # let's check what objects we got
-df1 = result["df1"] # extract the pandas data frame for object df1
+# parse string to json
+obj = json.loads(data)
 
-# print(df1)
+# Prints name of State
+print(obj["features"][0]["properties"]["NAME_1"])
+
+
+# {'GID_0': 'USA', 'NAME_0': 'United States', 'GID_1': 'USA.1_1', 'NAME_1': 'Alabama', 'VARNAME_1':
+# 'AL|Ala.', 'NL_NAME_1': '', 'TYPE_1': 'State', 'ENGTYPE_1': 'State', 'CC_1': '', 'HASC_1': 'US.AL'
+# }
