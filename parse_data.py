@@ -25,12 +25,13 @@
 
 import json
 import pickle
+import os
 
-with open('gadm36_USA_1.json', 'r') as file:
-    data = file.read()
-
-# parse string to json
-obj = json.loads(data)
+# with open('gadm36_USA_1.json', 'r') as file:
+#     data = file.read()
+#
+# # parse string to json
+# obj = json.loads(data)
 
 # Prints name of State
 # print(obj["features"][0]["properties"]["NAME_1"])
@@ -41,17 +42,43 @@ obj = json.loads(data)
 
 
 # testing with one state obj
-state_data = obj["features"]
+# state_data = obj["features"]
+#
+# # TODO: create state_name:state_coords for each object. Pickle object. Store object in coords/state file
+# # https://docs.python.org/3/library/pickle.
+# for state in state_data:
+#     state_name = state["properties"]["NAME_1"]
+#     state_coords = state["geometry"]
+#
+#     with open(f'coords/states/{state_name}', 'wb') as geo_file:
+#         state_obj = {state_name:state_coords}
+#         pickle.dump(state_obj, geo_file)
 
-# TODO: create state_name:state_coords for each object. Pickle object. Store object in coords/state file
-# https://docs.python.org/3/library/pickle.
-for state in state_data:
-    state_name = state["properties"]["NAME_1"]
-    state_coords = state["geometry"]
 
-    with open(f'coords/states/{state_name}', 'wb') as geo_file:
-        state_obj = {state_name:state_coords}
-        pickle.dump(state_obj, geo_file)
+with open('gadm36_USA_2.json', 'r') as file:
+    data = file.read()
+
+# parse string to json
+obj = json.loads(data)
+
+
+county_data = obj["features"]
+
+for county in county_data:
+    state_name = county["properties"]["NAME_1"]
+    county_name = county["properties"]["NAME_2"]
+    county_coords = county["geometry"]
+
+    state_file_path = f'coords/counties/{state_name}'
+    county_file_path = f'coords/counties/{state_name}/{county_name}'
+
+    if not os.path.exists(state_file_path):
+        os.makedirs(state_file_path)
+
+    with open(county_file_path, 'wb') as geo_file:
+        county_obj = {county_name:county_coords}
+        pickle.dump(county_obj, geo_file)
+
 
 
 
