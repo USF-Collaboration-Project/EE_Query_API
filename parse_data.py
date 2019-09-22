@@ -24,6 +24,7 @@
 # - Process form submission to make GEE query based on unpickled coordinates 
 
 import json
+import pickle
 
 with open('gadm36_USA_1.json', 'r') as file:
     data = file.read()
@@ -33,6 +34,25 @@ obj = json.loads(data)
 
 # Prints name of State
 print(obj["features"][0]["properties"]["NAME_1"])
+# Prints coordinates for State
+print(obj["features"][0]["geometry"])
+# Prints properties of an coordinate object
+print(obj["features"][0]["properties"])
+
+
+# testing with one state obj
+state_data = [obj["features"][0]]
+
+# TODO: create state_name:state_coords for each object. Pickle object. Store object in coords/state file
+
+for state in state_data:
+    state_name = state_data["properties"]["NAME_1"]
+    state_coords = state_data["geometry"]
+
+    state_obj = {state_name:state_coords}
+
+    with open(f'coords/states/{state_name}', 'w') as geo_file:
+        geo_file.write
 
 
 # {'GID_0': 'USA', 'NAME_0': 'United States', 'GID_1': 'USA.1_1', 'NAME_1': 'Alabama', 'VARNAME_1':
