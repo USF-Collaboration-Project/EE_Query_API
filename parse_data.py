@@ -54,6 +54,11 @@ for state in state_data:
         pickle.dump(state_obj, geo_file)
 
 
+with open(f'coords/states/{state_name}', 'rb') as pickle_file:
+    geo_json = pickle.load(pickle_file)
+    print(geo_json)
+
+
 
 
 
