@@ -33,26 +33,29 @@ with open('gadm36_USA_1.json', 'r') as file:
 obj = json.loads(data)
 
 # Prints name of State
-print(obj["features"][0]["properties"]["NAME_1"])
-# Prints coordinates for State
-print(obj["features"][0]["geometry"])
-# Prints properties of an coordinate object
-print(obj["features"][0]["properties"])
+# print(obj["features"][0]["properties"]["NAME_1"])
+# # Prints coordinates for State
+# print(obj["features"][0]["geometry"])
+# # Prints properties of an coordinate object
+# print(obj["features"][0]["properties"])
 
 
 # testing with one state obj
 state_data = [obj["features"][0]]
 
 # TODO: create state_name:state_coords for each object. Pickle object. Store object in coords/state file
-
+# https://docs.python.org/3/library/pickle.
 for state in state_data:
-    state_name = state_data["properties"]["NAME_1"]
-    state_coords = state_data["geometry"]
+    state_name = state["properties"]["NAME_1"]
+    state_coords = state["geometry"]
 
-    state_obj = {state_name:state_coords}
+    with open(f'coords/states/{state_name}', 'wb') as geo_file:
+        state_obj = {state_name:state_coords}
+        pickle.dump(state_obj, geo_file)
 
-    with open(f'coords/states/{state_name}', 'w') as geo_file:
-        geo_file.write
+
+
+
 
 
 # {'GID_0': 'USA', 'NAME_0': 'United States', 'GID_1': 'USA.1_1', 'NAME_1': 'Alabama', 'VARNAME_1':
