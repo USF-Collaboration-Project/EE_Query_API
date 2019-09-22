@@ -41,7 +41,7 @@ obj = json.loads(data)
 
 
 # testing with one state obj
-state_data = [obj["features"][0]]
+state_data = obj["features"]
 
 # TODO: create state_name:state_coords for each object. Pickle object. Store object in coords/state file
 # https://docs.python.org/3/library/pickle.
@@ -54,9 +54,14 @@ for state in state_data:
         pickle.dump(state_obj, geo_file)
 
 
-with open(f'coords/states/{state_name}', 'rb') as pickle_file:
-    geo_json = pickle.load(pickle_file)
-    print(geo_json)
+
+
+
+
+# NOTE: Use this code for the API
+# with open(f'coords/states/{state_name}', 'rb') as pickle_file:
+#     geo_json = pickle.load(pickle_file)
+#     print(geo_json)
 
 
 
