@@ -41,13 +41,6 @@ def parse_state_geojson():
     # parse string to json
     obj = json.loads(data)
 
-    # Prints name of State
-    # print(obj["features"][0]["properties"]["NAME_1"])
-    # Prints coordinates for State
-    # print(obj["features"][0]["geometry"])
-    # Prints properties of an coordinate object
-    # print(obj["features"][0]["properties"])
-
     # Static json path to features
     state_data = obj["features"]
 
@@ -58,7 +51,7 @@ def parse_state_geojson():
         # Extract state geometry
         state_coords = state["geometry"]
 
-        # Write binary file for specific state and cache the file
+        # Write binary file for specific state and cache the file for loading on server
         with open(f'coords/states/{state_name}', 'wb') as geo_file:
             state_obj = {state_name:state_coords}
             pickle.dump(state_obj, geo_file)
