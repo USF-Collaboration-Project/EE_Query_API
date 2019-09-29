@@ -39,8 +39,11 @@
   <button id="downloadButton" disabled = true>download csv</button>
   <table id = "results">
   </table>
+  <div id = "graphDemo"></div>
+  <div id = "bandButtons"></div>
 
 </body>
+<script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
 
   const choices = {
@@ -99,6 +102,9 @@
 
   const stateQuery = document.getElementById("stateQuery")
   const countyQueryDiv = document.getElementById("countyQueryContainer")
+
+  const graph = document.getElementById("graphDemo")
+  const bandButtons = document.getElementById("bandButtons")
 
   Object.keys(choices).forEach((state)=> {
     const state_choice = document.createElement("option")
@@ -197,6 +203,8 @@
         })
         resultDiv.appendChild(tableRow)
       }
+
+      createBandButtons(data)
     }).catch((err) => {
       console.log('-- Error --')
       console.log(err.message)
@@ -204,6 +212,128 @@
     })
 
     return []
+  }
+
+  function createBandButtons(data){
+    Object.keys(data).slice(2).forEach(key => {
+      newButton = document.createElement("button")
+      newButton.innerHTML = key
+      newButton.addEventListener("click", function(){
+        graph.innerHTML = ""
+        createGraph(data, key)
+      })
+      bandButtons.appendChild(newButton)
+    })
+  }
+
+  function getChartData(band, bins = 8){
+
+    console.log("band TEST________")
+    console.log(band)
+    const min_num = Math.min(...band)
+    const max_num = Math.max(...band)
+
+    console.log("min is " + min_num)
+    console.log("max is " + max_num)
+
+    const range = max_num - min_num
+    const bin_range = range/bins
+    let histogramData = []
+    let chart_labels = []
+    for (let i = 0; i <= bins; i++){
+      histogramData.push(0)
+      chart_labels.push((min_num + (i * bin_range)) + " to " + (min_num + ((i + 1) * bin_range)))
+    }
+
+    for (let i = 0; i < band.length; i ++){
+      console.log(Math.floor((band[i] - min_num) / bin_range))
+      histogramData[Math.floor((band[i] - min_num) / bin_range)] += 1
+    }
+
+    to_return = []
+    for (let i = 0; i < histogramData.length; i++){
+      toPush = {
+        name: chart_labels[i],
+        y: histogramData[i]
+      }
+
+      to_return.push(toPush)
+    }
+    return to_return
+
+  }
+
+  function createGraph(data, key) {
+    console.log(key + " button was pressed")
+    const chartInfo = getChartData(data[key], 4)
+    Highcharts.chart("graphDemo", {
+      // Removes Highcharts logo and link from bottom right corner
+  		credits: {
+  			enabled: false
+  		},
+      // Type of chart, in this case bar/column chart
+      chart: {
+        type: 'column'
+      },
+      // Title of graph
+  		title: {
+  		    text: "Histogram for " + key + " band"
+  		},
+      // Subtitle text
+  		subtitle: {
+  			text: "Example of subtitle"
+  		},
+      // All plot options, most are self explainitory
+  		plotOptions: {
+  		  bar : { // define type of plot to set options for or...
+  		  	marker: {
+  		   		enabled: true
+  		   	}
+  		  },
+        // set options for all here
+  		  series: {
+  		    pointStart: 0,
+  		  }
+  		},
+      // Tool tips when hovering around graph (I think there are like 5 different places that change the on hover effects)
+  		tooltip : {
+  		  	enabled: true,
+  		   	animation: true,
+  		   	followPointer: true
+  		},
+
+  		series: [
+        {
+  		    name: "Number between range",
+  		    data: chartInfo,
+  		    showInLegend: true,
+  		    //color: lineColor, //Unused, can define a color or set of colors here
+  		  }
+      ],
+
+  		yAxis: {
+  			title: {
+  				text: undefined
+  			}//,
+  			/*labels: { // Unused formatter, good example if used later
+  				formatter: function(){
+
+  					let fractionDigits = 1
+  					if(this.value < 20){
+  						fractionDigits += 1
+  					} if (this.value < 1){
+  						fractionDigits += 1
+  					}
+
+  					if(isMoney[chart_num]){
+  						return '$' + this.value.toLocaleString(undefined, {maximumFractionDigits: fractionDigits})
+  					} else {
+  						return this.value.toLocaleString(undefined, {maximumFractionDigits: fractionDigits})
+  					}
+  				}
+  			}*/
+  		}
+  	});
   }
 
   function convertToCSV(data, headers) {
