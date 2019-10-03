@@ -73,6 +73,12 @@ def get_data_from_image():
 
     # Extract image or image collection name from request
     image_name = request.json.get('imageName')
+    state_name = request.json.get('stateName')
+    county_name = request.json.get('countyName')
+
+    print("TEST **********************")
+    print(image_name, state_name, county_name)
+
     srtm = None
     # Load the SRTM image. Handling error for image vs image collection
     print(srtm)

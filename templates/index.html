@@ -100,11 +100,16 @@
     "Wyoming": ["Albany","Big Horn","Campbell","Carbon","Converse","Crook","Fremont","Goshen","Hot Springs","Johnson","Laramie","Lincoln","Natrona","Niobrara","Park","Platte","Sheridan","Sublette","Sweetwater","Teton","Uinta","Washakie"]
   }
 
+  let stateChoice
+  let countyChoice
+
   const stateQuery = document.getElementById("stateQuery")
   const countyQueryDiv = document.getElementById("countyQueryContainer")
 
   const graph = document.getElementById("graphDemo")
   const bandButtons = document.getElementById("bandButtons")
+
+  let countyOptions
 
   Object.keys(choices).forEach((state)=> {
     const state_choice = document.createElement("option")
@@ -113,14 +118,25 @@
   })
 
   stateQuery.addEventListener("input", function(){
+
+    stateChoice = stateQuery.value
     countyQueryDiv.innerHTML = ""
-    const countyOptions = document.createElement("select")
+    countyOptions = document.createElement("select")
+
+    let countyOption = document.createElement("option")
+    countyOption.innerHTML = "Whole_state"
+    countyOptions.appendChild(countyOption)
     for(let i = 0; i < choices[stateQuery.value].length; i ++){
-      const countyChoice = document.createElement("option")
-      countyChoice.innerHTML = choices[stateQuery.value][i]
-      countyOptions.appendChild(countyChoice)
+      countyOption = document.createElement("option")
+      countyOption.innerHTML = choices[stateQuery.value][i]
+      countyOptions.appendChild(countyOption)
     }
     countyQueryDiv.appendChild(countyOptions)
+
+    countyOptions.addEventListener("input", function(){
+      countyChoice = countyOptions.value
+      console.log(countyChoice, stateChoice)
+    })
   })
 
   // console.log("Hello world")
@@ -165,7 +181,9 @@
     const options = {
       method: 'post',
       body: JSON.stringify({
-        imageName: value
+        imageName: value,
+        stateName: stateChoice,
+        countyName: countyChoice,
       }),
       headers: {
         'Accept': 'application/json',
