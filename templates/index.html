@@ -123,12 +123,14 @@
     countyQueryDiv.appendChild(countyOptions)
   })
 
-  console.log("Hello world")
+  // console.log("Hello world")
   const images = ["IDAHO_EPSCOR/GRIDMET", "CGIAR/SRTM90_V4"]
 
   const headerNotice = document.getElementById("header")
   const imageQ = document.getElementById("imageQuery")
   const submitQuery = document.getElementById("submitQuery")
+
+  console.log(`submitQuery: ${submitQuery}`)
 
   for(let i = 0; i < images.length; i ++){
     const newOption = document.createElement("option")
@@ -174,7 +176,7 @@
     console.log(options)
 
     fetch('./get_data', options).then((res) => {
-      console.log("RETURNING RESPONSE ******************")
+      console.log("RETURNING RESPONSE *******************")
       console.log(res)
       return res.text()
     }).then((json) => {

@@ -1,3 +1,9 @@
+# Questions:
+#
+# Is there documentation for GEE Server Side API?
+# We have been doing inferences/trail and error for
+
+
 
 """
 Python Playground for testing EE
