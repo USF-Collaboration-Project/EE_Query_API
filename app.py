@@ -77,10 +77,6 @@ def get_data_from_image():
     state_geo_json = None
     county_geo_json = None
 
-    # type_obj = type(state_name)
-    # print(f"\n\n\n\n{type_obj}\n\n\n\n\n")
-
-    # {'District of Columbia': {'type': 'Polygon', 'coordinates': [[[-77.01642609, 38.80926132],
 
     # Loading GeoJSON shape file
     # Request was made for whole STATE data
@@ -95,7 +91,7 @@ def get_data_from_image():
             state_geo_json = ee.Geometry.MultiPolygon(coord_data)
             # print(geo_json)
 
-    # {'Butte': {'type': 'Polygon', 'coordinates': [[[-113.7977676391601, 43
+
     # Request was made for COUNTY data
     else:
         county_file_path = f'coords/counties/{state_name}/{county_name}'
@@ -104,10 +100,10 @@ def get_data_from_image():
         with open(county_file_path, 'rb') as pickle_file:
             # Obtain geo coordinates
             coord_data = pickle.load(pickle_file)[f'{county_name}']['coordinates']
-            # print(pickle.load(pickle_file))
+
             county_geo_json = ee.Geometry.MultiPolygon(coord_data)
 
-            # print(geo_json)
+
 
     # Choosing state_geo_json or county_geo_json based on what is available/requested
     region = state_geo_json if state_geo_json != None else county_geo_json
