@@ -16,3 +16,4 @@ httplib2==0.13.1
 pyreadr==0.2.1
 uritemplate==3.0.0
 gunicorn
+ee
