@@ -101,7 +101,7 @@ def parse_county_geojson():
             pickle.dump(county_obj, geo_file)
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # NOTE: Uncomment to parse state/county GeoJSON shape files
     # parse_state_geojson()
