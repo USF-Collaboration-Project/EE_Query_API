@@ -1,3 +1,8 @@
+import json
+import pickle
+import os
+
+
 
 """
     Geospatial data is being obtained from https://gadm.org/index.html
@@ -22,9 +27,6 @@
 # - Pickle objects and store in a folder hierarchy: (coords --> states ---> county) (DONE)
 # - Process form submission to make GEE query based on unpickled coordinates (Need to do on server)
 
-import json
-import pickle
-import os
 
 def parse_state_geojson():
     """
