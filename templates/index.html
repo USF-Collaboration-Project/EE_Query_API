@@ -139,12 +139,14 @@
     })
   })
 
-  console.log("Hello world")
+  // console.log("Hello world")
   const images = ["IDAHO_EPSCOR/GRIDMET", "CGIAR/SRTM90_V4"]
 
   const headerNotice = document.getElementById("header")
   const imageQ = document.getElementById("imageQuery")
   const submitQuery = document.getElementById("submitQuery")
+
+  console.log(`submitQuery: ${submitQuery}`)
 
   for(let i = 0; i < images.length; i ++){
     const newOption = document.createElement("option")
@@ -190,9 +192,15 @@
     }
 
     console.log(options)
+<<<<<<< HEAD
     // CHANGE THIS LINE
     fetch('./get_date_data', options).then((res) => {
       console.log("RETURNING RESPONSE ******************")
+=======
+
+    fetch('./get_data', options).then((res) => {
+      console.log("RETURNING RESPONSE *******************")
+>>>>>>> f9c4558e552430b39d5d81966f7a745f8ff838c2
       console.log(res)
       return res.text()
     }).then((json) => {
