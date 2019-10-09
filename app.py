@@ -6,7 +6,7 @@ import pickle
 # Earth Engine import and initialization
 import ee
 # Trigger the authentication flow.
-# ee.Authenticate()
+ee.Authenticate()
 ee.Initialize()
 
 app = Flask(__name__)
