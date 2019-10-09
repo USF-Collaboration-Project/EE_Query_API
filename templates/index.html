@@ -190,8 +190,8 @@
     }
 
     console.log(options)
-
-    fetch('./get_data', options).then((res) => {
+    // CHANGE THIS LINE
+    fetch('./get_date_data', options).then((res) => {
       console.log("RETURNING RESPONSE ******************")
       console.log(res)
       return res.text()
