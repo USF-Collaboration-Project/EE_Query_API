@@ -10,11 +10,7 @@ from formatting_date_from_user.get_date_range import get_num_of_days
 import ee
 ee.Initialize()
 # Trigger the authentication flow.
-<<<<<<< HEAD
-#ee.Authenticate()
-=======
 # ee.Authenticate()
->>>>>>> sukhrob-dev
 
 
 
@@ -36,7 +32,7 @@ def county_state_geo_json(state_name, county_name):
 
     # Loading GeoJSON shape file
     # Request was made for whole STATE data
-    if county_name is None:
+    if county_name is None or county_name is "Whole_state":
         print(f'STATE NAME: {state_name}')
         state_file_path = f'coords/states/{state_name}.dms'
         # Read cached GeoJSON
@@ -44,7 +40,7 @@ def county_state_geo_json(state_name, county_name):
             # print(pickle.load(pickle_file))
             # Obtain geo coordinates
             coord_data = pickle.load(pickle_file)[state_name]['coordinates']
-            state_geo_json = ee.Geometry.MultiPolygon(coord_data)
+            return ee.Geometry.MultiPolygon(coord_data)
             # print(geo_json)
 
     # Request was made for COUNTY data
@@ -56,9 +52,7 @@ def county_state_geo_json(state_name, county_name):
             # Obtain geo coordinates
             coord_data = pickle.load(pickle_file)[f'{county_name}']['coordinates']
 
-            county_geo_json = ee.Geometry.MultiPolygon(coord_data)
-
-    return county_geo_json, state_geo_json
+            return ee.Geometry.MultiPolygon(coord_data)
 
 
 @app.route('/')
@@ -162,39 +156,8 @@ def get_data_from_image():
     state_name = request.json.get('stateName')
     county_name = request.json.get('countyName')
 
-    state_geo_json = None
-    county_geo_json = None
-
-
-    # Loading GeoJSON shape file
-    # Request was made for whole STATE data
-    if county_name == None:
-        print(f'STATE NAME: {state_name}')
-        state_file_path = f'coords/states/{state_name}.dms'
-        # Read cached GeoJSON
-        with open(state_file_path, 'rb') as pickle_file:
-            # print(pickle.load(pickle_file))
-            # Obtain geo coordinates
-            coord_data = pickle.load(pickle_file)[state_name]['coordinates']
-            state_geo_json = ee.Geometry.MultiPolygon(coord_data)
-            # print(geo_json)
-
-
-    # Request was made for COUNTY data
-    else:
-        county_file_path = f'coords/counties/{state_name}/{county_name}.dms'
-
-        # Read cached GeoJSON
-        with open(county_file_path, 'rb') as pickle_file:
-            # Obtain geo coordinates
-            coord_data = pickle.load(pickle_file)[f'{county_name}']['coordinates']
-
-            county_geo_json = ee.Geometry.MultiPolygon(coord_data)
-
-
-
     # Choosing state_geo_json or county_geo_json based on what is available/requested
-    region = state_geo_json if state_geo_json != None else county_geo_json
+    region = county_state_geo_json(state_name, county_name)
 
     print("TEST **********************")
     print(image_name, state_name, county_name)
