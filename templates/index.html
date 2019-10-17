@@ -27,6 +27,10 @@
 
 <body>
   <div id="queries">
+    <select id="queryType">
+      <option>AVERAGE</option>
+      <option>COORDS</option>
+    </select>
     <select id="imageQuery">
     </select>
     <select id="stateQuery">
@@ -35,7 +39,7 @@
     </div>
     <div id = "dateSelect">
       <input type="date" id="dateStart" value="2018-01-01" min="1985-01-01" max="2019-09-29">
-      <input type="date" id="dateEnd" value="2018-01-31" min="1985-01-02" max="2019-09-30">
+      <input type="date" id="dateEnd" value="2018-01-08" min="1985-01-02" max="2019-09-30">
     </div>
     <button id="submitQuery">Submit Query</button>
   </div>
@@ -108,6 +112,7 @@
   let stateChoice
   let countyChoice
 
+  const queryType = document.getElementById("queryType")
   const stateQuery = document.getElementById("stateQuery")
   const countyQueryDiv = document.getElementById("countyQueryContainer")
   const startDateQuery = document.getElementById("dateStart")
@@ -202,40 +207,23 @@
 
     console.log(options)
 
-    fetch('./get_date_data', options).then((res) => {
+    let queryURL = './get_date_data'
+    if(queryType.value == 'COORDS'){
+      queryURL = './get_data'
+    }
+
+    fetch(queryURL, options).then((res) => {
       console.log("RETURNING RESPONSE *******************")
       console.log(res)
       return res.text()
     }).then((json) => {
       const data = JSON.parse(json)
-
       console.log(data)
 
-      document.getElementById("downloadButton").disabled = false
-      document.getElementById("downloadButton").addEventListener("click", function(){
-        download(data)
-      })
-      headerNotice.innerHTML = "Now showing the first " + Math.min(data["lon"].length,20) + " elements of the csv. </br>Click the download button below to download the full file."
-      let keys = Object.keys(data)
-      const headerRow = document.createElement("tr")
-      keys.forEach(key =>{
-        const el = document.createElement("th")
-        el.innerHTML = key
-        headerRow.appendChild(el)
-      })
-      resultDiv.appendChild(headerRow)
-
-      for(let i = 0; i < Math.min(data["lon"].length, 20); i ++){
-        tableRow = document.createElement("tr")
-        keys.forEach(key =>{
-          const el = document.createElement("td")
-          el.innerHTML = data[key][i]
-          tableRow.appendChild(el)
-        })
-        resultDiv.appendChild(tableRow)
+      if (queryType.value == 'COORDS'){
+        handleCOORDSrequest(data)
       }
 
-      createBandButtons(data)
     }).catch((err) => {
       console.log('-- Error --')
       console.log(err.message)
@@ -243,6 +231,36 @@
     })
 
     return []
+  }
+
+  function handleCOORDSrequest(data){
+
+    console.log(data)
+    document.getElementById("downloadButton").disabled = false
+    document.getElementById("downloadButton").addEventListener("click", function(){
+      download(data)
+    })
+    headerNotice.innerHTML = "Now showing the first " + Math.min(data["lon"].length,20) + " elements of the csv. </br>Click the download button below to download the full file."
+    let keys = Object.keys(data)
+    const headerRow = document.createElement("tr")
+    keys.forEach(key =>{
+      const el = document.createElement("th")
+      el.innerHTML = key
+      headerRow.appendChild(el)
+    })
+    resultDiv.appendChild(headerRow)
+
+    for(let i = 0; i < Math.min(data["lon"].length,20); i ++){
+      tableRow = document.createElement("tr")
+      keys.forEach(key =>{
+        const el = document.createElement("td")
+        el.innerHTML = data[key][i]
+        tableRow.appendChild(el)
+      })
+      resultDiv.appendChild(tableRow)
+    }
+
+    createBandButtons(data)
   }
 
   function createBandButtons(data){

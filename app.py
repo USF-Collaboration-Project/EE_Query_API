@@ -4,11 +4,13 @@ import requests
 import json
 import pickle
 
+from formatting_date_from_user.get_date_range import get_num_of_days
+
 # Earth Engine import and initialization
 import ee
 ee.Initialize()
 # Trigger the authentication flow.
-ee.Authenticate()
+#ee.Authenticate()
 
 
 
@@ -68,6 +70,11 @@ def get_data_from_date_image():
     image_name = request.json.get('imageName')
     start_date = request.json.get('startDate')
     end_date = request.json.get('endDate')
+
+    delta_days = get_num_of_days(start_date, end_date)
+
+    print(delta_days, start_date, end_date)
+
     print(image_name, "TEST*********************")
     #nameOfArea = "polygon"
     region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
@@ -79,7 +86,7 @@ def get_data_from_date_image():
     print(image_data.size());
     all_dicts = []
 
-    for i in range(30):
+    for i in range(delta_days):
         print("TEST", i)
         image = ee.Image(listOfImages.get(i)).clip(region)
         meanDict = image.reduceRegion( reducer= ee.Reducer.mean(), geometry= region, scale= scale_value)
