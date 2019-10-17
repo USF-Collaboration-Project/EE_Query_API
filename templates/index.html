@@ -33,6 +33,10 @@
     </select>
     <div id = "countyQueryContainer">
     </div>
+    <div id = "dateSelect">
+      <input type="date" id="dateStart" value="2018-01-01" min="1985-01-01" max="2019-09-29">
+      <input type="date" id="dateEnd" value="2018-01-31" min="1985-01-02" max="2019-09-30">
+    </div>
     <button id="submitQuery">Submit Query</button>
   </div>
   <h3 id="header"></h3>
@@ -47,6 +51,7 @@
 <script>
 
   const choices = {
+    "N/A": ["Don't select this"],
     "Alabama": ["Autauga","Baldwin","Barbour","Bibb","Blount","Bullock","Butler","Calhoun","Chambers","Cherokee","Chilton","Choctaw","Clarke","Clay","Cleburne","Coffee","Colbert","Conecuh","Coosa","Covington","Crenshaw","Cullman","Dale","Dallas","De Kalb","Elmore","Escambia","Etowah","Fayette","Franklin","Geneva","Greene","Hale","Henry","Houston","Jackson","Jefferson","Lamar","Lauderdale","Lawrence","Lee","Limestone","Lowndes","Macon","Madison","Marengo","Marion","Marshall","Mobile","Monroe","Montgomery","Morgan","Perry","Pickens","Pike","Randolph","Russell","Saint Clair","Shelby","Sumter","Talladega","Tallapoosa","Tuscaloosa","Walker","Washington","Wilcox","Winston"],
     "Alaska": ["Aleutians East","Aleutians West","Anchorage","Bethel","Bristol Bay","Denali","Dillingham","Fairbanks North Star","Haines","Juneau","Kenai Peninsula","Ketchikan Gateway","Kodiak Island","Lake and Peninsula","Matanuska-Susitna","Nome","North Slope","Northwest Arctic","Prince of Wales-Outer Ketchi","Sitka","Skagway-Yakutat-Angoon","Southeast Fairbanks","Valdez-Cordova","Wade Hampton","Wrangell-Petersburg","Yukon-Koyukuk"],
     "Arizona": ["Apache","Cochise","Coconino","Gila","Graham","Greenlee","La Paz","Maricopa","Mohave","Navajo","Pima","Pinal","Santa Cruz","Yavapai","Yuma"],
@@ -105,6 +110,8 @@
 
   const stateQuery = document.getElementById("stateQuery")
   const countyQueryDiv = document.getElementById("countyQueryContainer")
+  const startDateQuery = document.getElementById("dateStart")
+  const endDateQuery = document.getElementById("dateEnd")
 
   const graph = document.getElementById("graphDemo")
   const bandButtons = document.getElementById("bandButtons")
@@ -184,6 +191,8 @@
         imageName: value,
         stateName: stateChoice,
         countyName: countyChoice,
+        startDate: startDateQuery.value,
+        endDate: endDateQuery.value
       }),
       headers: {
         'Accept': 'application/json',
@@ -192,19 +201,15 @@
     }
 
     console.log(options)
-<<<<<<< HEAD
-    // CHANGE THIS LINE
-    fetch('./get_date_data', options).then((res) => {
-      console.log("RETURNING RESPONSE ******************")
-=======
 
-    fetch('./get_data', options).then((res) => {
+    fetch('./get_date_data', options).then((res) => {
       console.log("RETURNING RESPONSE *******************")
->>>>>>> f9c4558e552430b39d5d81966f7a745f8ff838c2
       console.log(res)
       return res.text()
     }).then((json) => {
       const data = JSON.parse(json)
+
+      console.log(data)
 
       document.getElementById("downloadButton").disabled = false
       document.getElementById("downloadButton").addEventListener("click", function(){
