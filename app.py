@@ -3,10 +3,12 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
+
 # Earth Engine import and initialization
 import ee
 # Trigger the authentication flow.
-# ee.Authenticate()
+ee.Authenticate()
+
 
 
 app = Flask(__name__)
