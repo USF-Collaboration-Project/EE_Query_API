@@ -100,11 +100,11 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
 
 @app.route('/get_date_data', methods=['GET','POST'])
 def get_data_from_date_image():
-    scale_value = 1000
 
     image_name = request.json.get('imageName')
     start_date = request.json.get('startDate')
     end_date = request.json.get('endDate')
+    scale_value = request.json.get('scaleValue')
 
     delta_days = get_num_of_days(start_date, end_date)
 
