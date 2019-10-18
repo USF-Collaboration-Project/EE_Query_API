@@ -5,9 +5,9 @@ import json
 import pickle
 # Earth Engine import and initialization
 import ee
-ee.Initialize()
+# ee.Initialize()
 # Trigger the authentication flow.
-ee.Authenticate()
+# ee.Authenticate()
 
 
 app = Flask(__name__)
