@@ -35,12 +35,15 @@
     </select>
     <select id="stateQuery">
     </select>
-    <div id = "countyQueryContainer">
+    <div id="countyQueryContainer">
     </div>
-    <div id = "dateSelect">
+    <div id="dateSelect">
       <input type="date" id="dateStart" value="2018-01-01" min="1985-01-01" max="2019-09-29">
       <input type="date" id="dateEnd" value="2018-01-08" min="1985-01-02" max="2019-09-30">
+
     </div>
+
+    <input type="number" id="scale" value=1000 min=100 max=10000>
     <button id="submitQuery">Submit Query</button>
   </div>
   <h3 id="header"></h3>
@@ -197,7 +200,8 @@
         stateName: stateChoice,
         countyName: countyChoice,
         startDate: startDateQuery.value,
-        endDate: endDateQuery.value
+        endDate: endDateQuery.value,
+        scaleValue: document.getElementById("scale").value
       }),
       headers: {
         'Accept': 'application/json',
