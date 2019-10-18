@@ -166,7 +166,7 @@
     imageQ.appendChild(newOption)
   }
 
-  const resultDiv = document.getElementById("results")
+  const resultTable = document.getElementById("results")
 
   submitQuery.addEventListener("click", (e) => {
 
@@ -178,7 +178,7 @@
     for(let i = 0; i < Math.min(results.length, 10); i++){
       const newDataPoint = document.createElement("div")
       newDataPoint.innerHTML = results[i]
-      resultDiv.appendChild(newDataPoint)
+      resultTable.appendChild(newDataPoint)
     }
   })
 
@@ -222,6 +222,8 @@
 
       if (queryType.value == 'COORDS'){
         handleCOORDSrequest(data)
+      } else {
+        handleAVGrequest(data)
       }
 
     }).catch((err) => {
@@ -233,9 +235,46 @@
     return []
   }
 
+  function handleAVGrequest(data){
+
+    document.getElementById("downloadButton").disabled = false
+    document.getElementById("downloadButton").addEventListener("click", function(){
+      downloadMatrix(data)
+    })
+
+    headerNotice.innerHTML = "Now showing the first " + Math.min(data.length,20) + " elements of the csv. </br>Click the download button below to download the full file."
+
+    let keys = Object.keys(data[0])
+    const headerRow = document.createElement("tr")
+    const el = document.createElement("th")
+    el.innerHTML = "Date"
+    headerRow.appendChild(el)
+    keys.forEach(key =>{
+      const el = document.createElement("th")
+      el.innerHTML = key
+      headerRow.appendChild(el)
+    })
+    resultTable.appendChild(headerRow)
+
+
+    for(let i = 0; i < Math.min(data.length,20); i++){
+      tableRow = document.createElement("tr")
+      const el = document.createElement("td")
+      el.innerHTML = i
+      tableRow.appendChild(el)
+      keys.forEach(key =>{
+        const el = document.createElement("td")
+        el.innerHTML = data[i][key]
+        tableRow.appendChild(el)
+      })
+      resultTable.appendChild(tableRow)
+    }
+
+    createAVGBandButtons(data)
+  }
+
   function handleCOORDSrequest(data){
 
-    console.log(data)
     document.getElementById("downloadButton").disabled = false
     document.getElementById("downloadButton").addEventListener("click", function(){
       download(data)
@@ -248,7 +287,7 @@
       el.innerHTML = key
       headerRow.appendChild(el)
     })
-    resultDiv.appendChild(headerRow)
+    resultTable.appendChild(headerRow)
 
     for(let i = 0; i < Math.min(data["lon"].length,20); i ++){
       tableRow = document.createElement("tr")
@@ -257,14 +296,28 @@
         el.innerHTML = data[key][i]
         tableRow.appendChild(el)
       })
-      resultDiv.appendChild(tableRow)
+      resultTable.appendChild(tableRow)
     }
 
-    createBandButtons(data)
+    createBandButtons(data.slice(2))
+  }
+
+  function createAVGBandButtons(data){
+
+    Object.keys(data[0]).forEach(key => {
+      newButton = document.createElement("button")
+      newButton.innerHTML = key
+      newButton.addEventListener("click", function(){
+        graph.innerHTML = ""
+        createLineGraph(data, key)
+      })
+      bandButtons.appendChild(newButton)
+    })
   }
 
   function createBandButtons(data){
-    Object.keys(data).slice(2).forEach(key => {
+
+    Object.keys(data).forEach(key => {
       newButton = document.createElement("button")
       newButton.innerHTML = key
       newButton.addEventListener("click", function(){
@@ -310,6 +363,87 @@
     }
     return to_return
 
+  }
+
+  function createLineGraph(data, key){
+    console.log(key + " button was pressed")
+
+    const startDate = startDateQuery.value
+
+    const year = parseInt(startDate.substring(0,4))
+    const month = parseInt(startDate.substring(5, startDate.indexOf('-', 5)))
+    const day = parseInt(startDate.substring(startDate.indexOf('-', 5)+1))
+
+    //let utcDate = new Date(year,month,day)
+
+    let chartData = []
+    for (let i = 0; i < data.length; i ++){
+      chartData.push([Date.UTC(year,month - 1,day+i),data[i][key]])
+      //utcDate = new Date(utcDate.getTime() + 1440 * 60000)
+    }
+
+    console.log(year +" "+month +" "+day)
+
+    console.log(chartData)
+
+    Highcharts.chart('graphDemo', {
+
+      title: {
+        text: 'Timeseries graph of ' + key + ' from ' + startDateQuery.value + ' to ' + endDateQuery.value
+      },
+      subtitle: {
+        text: 'Source: Google Earth Engine'
+      },
+      xAxis: {
+        type: 'datetime',
+        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
+        title: {
+            text: 'Date'
+        }
+      },
+      yAxis: {
+        title: {
+          text: key + ' value'
+        }
+      },
+      legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+      },
+
+      plotOptions: {
+        series: {
+          label: {
+            connectorAllowed: false
+          },
+          pointStart: Date.UTC(year,month,day)
+        }
+      },
+
+      series: [{
+          name: key + ' from ' + startDateQuery.value + ' to ' + endDateQuery.value,
+          data: chartData
+      }],
+
+      responsive: {
+        rules: [{
+          condition: {
+            maxWidth: 500
+          },
+          chartOptions: {
+            legend: {
+              layout: 'horizontal',
+              align: 'center',
+              verticalAlign: 'bottom'
+            }
+          }
+        }]
+      }
+    });
   }
 
   function createGraph(data, key) {
