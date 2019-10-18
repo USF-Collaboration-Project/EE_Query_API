@@ -1,8 +1,7 @@
-earthengine_api==0.1.197
 Flask==1.0.2
 requests==2.20.0
 cachetools==3.1.1
-earthengine-api==0.1.197
+earthengine-api==0.1.201
 future==0.17.1
 google-api-core==1.14.2
 google-api-python-client==1.7.11
@@ -16,4 +15,3 @@ httplib2==0.13.1
 pyreadr==0.2.1
 uritemplate==3.0.0
 gunicorn
-ee

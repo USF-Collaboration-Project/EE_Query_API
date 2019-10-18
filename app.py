@@ -5,6 +5,7 @@ import json
 import pickle
 # Earth Engine import and initialization
 import ee
+ee.Initialize()
 # Trigger the authentication flow.
 # ee.Authenticate()
 
@@ -58,7 +59,7 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
 @app.route('/get_data', methods=['GET','POST'])
 def get_data_from_image():
 
-    ee.Initialize()
+
     # static values
     scale_value = 10000
     #nameOfArea = "polygon"
@@ -72,6 +73,7 @@ def get_data_from_image():
     state_geo_json = None
     county_geo_json = None
 
+    print()
 
     # Loading GeoJSON shape file
     # Request was made for whole STATE data
@@ -211,4 +213,4 @@ def get_median_composite(path_to_collection, start_date, end_date, coord_point, 
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=3000)

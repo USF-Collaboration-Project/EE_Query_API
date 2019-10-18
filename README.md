@@ -30,3 +30,7 @@ We are providing an easy to use API generate custom geospatial datasets by extra
 
 
 # Installation and How To Use
+
+    <Add requirements.txt>
+    <Versions of Earth Engine API:>
+    https://pypi.org/project/earthengine-api/0.1.201/
