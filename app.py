@@ -7,7 +7,7 @@ import pickle
 import ee
 ee.Initialize()
 # Trigger the authentication flow.
-# ee.Authenticate()
+ee.Authenticate()
 
 
 app = Flask(__name__)
@@ -26,6 +26,7 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
         Args:
         band_name: (str)
      """
+
 
     # NOTE: Method from Sam, to extract data from polygon. Refactored from
     # EE Code Editor to Python. Currently not working.
