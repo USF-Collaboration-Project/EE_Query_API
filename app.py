@@ -5,7 +5,7 @@ import json
 import pickle
 # Earth Engine import and initialization
 import ee
-# ee.Initialize()
+ee.Initialize()
 # Trigger the authentication flow.
 # ee.Authenticate()
 
