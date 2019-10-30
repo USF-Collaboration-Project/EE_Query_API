@@ -3,15 +3,16 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
-import config
+import ee_config
 # Earth Engine import and initialization
 import ee
 
 
-ee.Initialize(config.EE_CREDENTIALS)
+ee.Initialize(ee_config.EE_CREDENTIALS)
 # Trigger the authentication flow.
 # ee.Authenticate()
-
+# config/earth-engine-query-api-c0cb563760ac.json
+'‘config/earth-engine-query-api-c0cb563760ac.json’'
 
 app = Flask(__name__)
 
