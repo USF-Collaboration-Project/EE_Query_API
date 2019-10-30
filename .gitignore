@@ -5,3 +5,8 @@ gadm36_USA_1.json
 gadm36_USA_2.json
 __pycache__
 .env
+app
+app.pyc
+lib
+app.yaml
+include

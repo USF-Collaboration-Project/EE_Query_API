@@ -3,9 +3,12 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
+import config
 # Earth Engine import and initialization
 import ee
-ee.Initialize()
+
+
+ee.Initialize(config.EE_CREDENTIALS)
 # Trigger the authentication flow.
 # ee.Authenticate()
 
@@ -15,6 +18,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    # return "HEllo world"
     return render_template('index.html')
 
 
@@ -79,8 +83,8 @@ def get_data_from_image():
     # Loading GeoJSON shape file
     # Request was made for whole STATE data
     if county_name == None:
-        print(f'STATE NAME: {state_name}')
-        state_file_path = f'coords/states/{state_name}'
+        print('STATE NAME: {}'.format(state_name))
+        state_file_path = 'coords/states/{}'.format(state_name)
         # Read cached GeoJSON
         with open(state_file_path, 'rb') as pickle_file:
             # print(pickle.load(pickle_file))
@@ -92,12 +96,12 @@ def get_data_from_image():
 
     # Request was made for COUNTY data
     else:
-        county_file_path = f'coords/counties/{state_name}/{county_name}'
+        county_file_path = 'coords/counties/{}/{}'.format(state_name,county_name)
 
         # Read cached GeoJSON
         with open(county_file_path, 'rb') as pickle_file:
             # Obtain geo coordinates
-            coord_data = pickle.load(pickle_file)[f'{county_name}']['coordinates']
+            coord_data = pickle.load(pickle_file)['{}'.format(county_name)]['coordinates']
 
             county_geo_json = ee.Geometry.MultiPolygon(coord_data)
 
