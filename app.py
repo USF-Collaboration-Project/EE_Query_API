@@ -12,7 +12,7 @@ ee.Initialize(ee_config.EE_CREDENTIALS)
 # Trigger the authentication flow.
 # ee.Authenticate()
 # config/earth-engine-query-api-c0cb563760ac.json
-'‘config/earth-engine-query-api-c0cb563760ac.json’'
+# '‘config/earth-engine-query-api-c0cb563760ac.json’'
 
 app = Flask(__name__)
 
