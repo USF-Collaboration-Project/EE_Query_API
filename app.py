@@ -7,8 +7,13 @@ import ee_config
 # Earth Engine import and initialization
 import ee
 
+# For deployed API
+# ee.Initialize(ee_config.EE_CREDENTIALS)
 
-ee.Initialize(ee_config.EE_CREDENTIALS)
+# For local use
+ee.Initialize()
+
+
 # Trigger the authentication flow.
 # ee.Authenticate()
 # config/earth-engine-query-api-c0cb563760ac.json
@@ -90,7 +95,7 @@ def get_data_from_image():
         with open(state_file_path, 'rb') as pickle_file:
             # print(pickle.load(pickle_file))
             # Obtain geo coordinates
-            coord_data = pickle.load(pickle_file)['state_name']['coordinates']
+            coord_data = pickle.load(pickle_file)['{}'.format(state_name)]['coordinates']
             state_geo_json = ee.Geometry.MultiPolygon(coord_data)
             # print(geo_json)
 
@@ -169,6 +174,9 @@ def get_data_from_image():
     formatted_data = zip_data(lat.getInfo(), lon.getInfo(), meanDict.getInfo())
     # print("test formatted_data")
     # print(formatted_data)
+
+
+    # return jsonify(formatted_data)
     return str(json.dumps(formatted_data))
 
 def zip_data(lat, lon, map_data):
