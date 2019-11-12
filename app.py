@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
-import ee_config
+# import ee_config
 from formatting_date_from_user.get_date_range import get_num_of_days
 
 # Earth Engine import and initialization
@@ -117,12 +117,12 @@ def get_data_from_date_image():
             coord_data = pickle.load(pickle_file)['{}'.format(state_name)]['coordinates']
             state_geo_json = ee.Geometry.MultiPolygon(coord_data)
 
-    delta_days = get_num_of_days(start_date, end_date)
+        delta_days = get_num_of_days(start_date, end_date)
 
-    print(delta_days, start_date, end_date)
+        print(delta_days, start_date, end_date)
 
-    #region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
-    region = county_state_geo_json(state_name, county_name)
+        #region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
+        region = county_state_geo_json(state_name, county_name)
 
 
     # Request was made for COUNTY data
