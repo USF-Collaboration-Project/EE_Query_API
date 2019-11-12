@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 Flask==1.0.2
 requests==2.20.0
 cachetools==3.1.1
 earthengine-api==0.1.201
+=======
+earthengine-api==0.1.201
+Flask==1.0.2
+requests==2.20.0
+cachetools==3.1.1
+>>>>>>> team/sam-dev
 future==0.17.1
 google-api-core==1.14.2
 google-api-python-client==1.7.11

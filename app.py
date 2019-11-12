@@ -4,22 +4,51 @@ import requests
 import json
 import pickle
 import ee_config
+from formatting_date_from_user.get_date_range import get_num_of_days
+
 # Earth Engine import and initialization
 import ee
-
-# For deployed API
-# ee.Initialize(ee_config.EE_CREDENTIALS)
-
-# For local use
 ee.Initialize()
-
-
 # Trigger the authentication flow.
 # ee.Authenticate()
 # config/earth-engine-query-api-c0cb563760ac.json
 # '‘config/earth-engine-query-api-c0cb563760ac.json’'
 
+
 app = Flask(__name__)
+
+def county_state_geo_json(state_name, county_name):
+    """Determines if county or state geo json needs to be returned"""
+    state_name = request.json.get('stateName')
+    county_name = request.json.get('countyName')
+
+    state_geo_json = None
+    county_geo_json = None
+
+
+    # Loading GeoJSON shape file
+    # Request was made for whole STATE data
+    if county_name is None or county_name is "Whole_state":
+        print(f'STATE NAME: {state_name}')
+        state_file_path = f'coords/states/{state_name}.dms'
+        # Read cached GeoJSON
+        with open(state_file_path, 'rb') as pickle_file:
+            # print(pickle.load(pickle_file))
+            # Obtain geo coordinates
+            coord_data = pickle.load(pickle_file)[state_name]['coordinates']
+            return ee.Geometry.MultiPolygon(coord_data)
+            # print(geo_json)
+
+    # Request was made for COUNTY data
+    else:
+        county_file_path = f'coords/counties/{state_name}/{county_name}.dms'
+
+        # Read cached GeoJSON
+        with open(county_file_path, 'rb') as pickle_file:
+            # Obtain geo coordinates
+            coord_data = pickle.load(pickle_file)[f'{county_name}']['coordinates']
+
+            return ee.Geometry.MultiPolygon(coord_data)
 
 
 @app.route('/')
@@ -34,7 +63,7 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
         Given Image name, return the available bands to choose from
         Returns: [LIST of STRINGS]
         Args:
-        band_name: (str)
+            band_name: (str)
      """
 
     scale_value = 1000;
@@ -63,24 +92,18 @@ def get_polygon_data(band_name='LANDSAT/LC08/C01/T1/LC08_044034_20140318'):
 
     # return str(band_names)
 
-@app.route('/get_data', methods=['GET','POST'])
-def get_data_from_image():
+@app.route('/get_date_data', methods=['GET','POST'])
+def get_data_from_date_image():
 
-
-    # static values
-    scale_value = 10000
-    #nameOfArea = "polygon"
-    #region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
-
-    # Extract image or image collection name from request
     image_name = request.json.get('imageName')
     state_name = request.json.get('stateName')
     county_name = request.json.get('countyName')
+    start_date = request.json.get('startDate')
+    end_date = request.json.get('endDate')
+    scale_value = int(request.json.get('scaleValue'))
 
-    state_geo_json = None
-    county_geo_json = None
+    print(scale_value)
 
-    print()
 
     # Loading GeoJSON shape file
     # Request was made for whole STATE data
@@ -93,7 +116,13 @@ def get_data_from_image():
             # Obtain geo coordinates
             coord_data = pickle.load(pickle_file)['{}'.format(state_name)]['coordinates']
             state_geo_json = ee.Geometry.MultiPolygon(coord_data)
-            # print(geo_json)
+
+    delta_days = get_num_of_days(start_date, end_date)
+
+    print(delta_days, start_date, end_date)
+
+    #region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
+    region = county_state_geo_json(state_name, county_name)
 
 
     # Request was made for COUNTY data
@@ -105,12 +134,47 @@ def get_data_from_image():
             # Obtain geo coordinates
             coord_data = pickle.load(pickle_file)['{}'.format(county_name)]['coordinates']
 
-            county_geo_json = ee.Geometry.MultiPolygon(coord_data)
+    image_data = ee.ImageCollection(image_name).filterBounds(region).filterDate(start_date,end_date)
+    listOfImages = image_data.toList(image_data.size());
+
+    #print(image_data.size());
+    all_dicts = []
+
+    for i in range(delta_days):
+        print("TEST", i)
+        image = ee.Image(listOfImages.get(i)).clip(region)
+        print("TEST 2", i)
+        meanDict = image.reduceRegion( reducer= ee.Reducer.mean(), geometry= region, scale= scale_value)
+        print("TEST 3", i)
+        print(meanDict)
+        print("___________________________\n\n\n")
+        print(meanDict.getInfo())
+        all_dicts.append(meanDict.getInfo())
 
 
+    #all_dicts = image_data.map(algorithm=map_function)
+    print(all_dicts)
+
+    return str(json.dumps(all_dicts))
+
+
+@app.route('/get_data', methods=['GET','POST'])
+def get_data_from_image():
+
+    #ee.Initialize()
+    # static values
+
+    #nameOfArea = "polygon"
+    #region = ee.Geometry.Rectangle(-122.2806, 37.1209, -122.0554, 37.2413)
+
+    # Extract image or image collection name from request
+    image_name = request.json.get('imageName')
+    state_name = request.json.get('stateName')
+    county_name = request.json.get('countyName')
+    scale_value = int(request.json.get('scaleValue'))
 
     # Choosing state_geo_json or county_geo_json based on what is available/requested
-    region = state_geo_json if state_geo_json != None else county_geo_json
+    region = county_state_geo_json(state_name, county_name)
 
     print("TEST **********************")
     print(image_name, state_name, county_name)
