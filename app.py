@@ -3,13 +3,13 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
-# import ee_config
+import ee_config
 
 from formatting_date_from_user.get_date_range import get_num_of_days
 
 # Earth Engine import and initialization
 import ee
-ee.Initialize()
+ee.Initialize(EE_CREDENTIALS)
 # Trigger the authentication flow.
 # ee.Authenticate()
 
