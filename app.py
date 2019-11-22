@@ -123,7 +123,7 @@ def get_data_from_date_image():
     time_start = time.time()
 
 
-    # G
+    # NOTE: look into http://www.gevent.org/ to see how to paraell processing
     def _mapping_over_date_data(day):
 
         image = ee.Image(listOfImages.get(day)).clip(region)
@@ -135,7 +135,7 @@ def get_data_from_date_image():
 
     all_dicts = map(_mapping_over_date_data, range(delta_days))
 
-    print(test_all_dicts)
+    # print(test_all_dicts)
 
     # OLD CODE: all_dicts created with for loop
     # all_dicts = []
