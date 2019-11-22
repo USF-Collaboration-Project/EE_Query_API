@@ -5,7 +5,7 @@ import json
 import pickle
 # from ee_config import EE_CREDENTIALS
 
-from collections import OrderedDict
+import time
 
 # Earth Engine import and initialization
 import ee
@@ -120,20 +120,26 @@ def get_data_from_date_image():
     image_data = ee.ImageCollection(image_name).filterBounds(region).filterDate(start_date,end_date)
     listOfImages = image_data.toList(image_data.size());
 
+    time_start = time.time()
 
+
+    # G
     def _mapping_over_date_data(day):
 
         image = ee.Image(listOfImages.get(day)).clip(region)
 
-        meanDict = image.reduceRegion(reducer= ee.Reducer.mean(), geometry= region, scale= scale_value)
+        meanDict = image.reduceRegion(reducer= ee.Reducer.mean(), geometry=region, scale=scale_value)
+
 
         return meanDict.getInfo()
 
-    # all_dicts = range(delta_days).map(_mapping_over_date_data(scale))
     all_dicts = map(_mapping_over_date_data, range(delta_days))
 
+    print(test_all_dicts)
 
     # OLD CODE: all_dicts created with for loop
+    # all_dicts = []
+
     # for i in range(delta_days):
     #     # print("TEST", i)
     #     image = ee.Image(listOfImages.get(i)).clip(region)
@@ -141,15 +147,23 @@ def get_data_from_date_image():
     #     meanDict = image.reduceRegion( reducer= ee.Reducer.mean(), geometry= region, scale= scale_value)
     #
     #     all_dicts.append(meanDict.getInfo())
-
-    #all_dicts = image_data.map(algorithm=map_function)
+    #
 
     print('/get_date_data: \n\n')
-    print(all_dicts)
+    list_all_dicts = list(all_dicts)
+    print('Time:', time.time()-time_start)
+    print(list_all_dicts)
+    print(len(list_all_dicts))
 
+
+    time_end = time.time()
+
+    print("Total Time:", time_start-time_end)
+    # Total Time: -214.62043595314026
 
     # return str(json.dumps(all_dicts))
-    return str(json.dumps(list(all_dicts)))
+    # return str(json.dumps(list(all_dicts)))
+    return str(json.dumps(list_all_dicts))
 
 
 
