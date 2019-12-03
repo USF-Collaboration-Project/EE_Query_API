@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
-# from ee_config import EE_CREDENTIALS
+from ee_config import EE_CREDENTIALS
 
 import time
 
