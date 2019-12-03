@@ -10,7 +10,5 @@ app.pyc
 lib
 app.yaml
 include
-config
 coords
 .DS_Store
-config/earth-engine-query-api-c0cb563760ac.json

@@ -12,8 +12,8 @@ import ee
 
 from formatting_date_from_user.get_date_range import get_num_of_days
 
-ee.Initialize()
-# ee.Initialize(EE_CREDENTIALS)
+# ee.Initialize()
+ee.Initialize(EE_CREDENTIALS)
 # Trigger the authentication flow.
 # ee.Authenticate()
 
