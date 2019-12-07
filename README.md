@@ -8,8 +8,7 @@ We are providing an easy to use API generate custom geospatial datasets by extra
 
 ### '/get_data', methods=['GET','POST']
 
-
-    Send POST request to 'https://git.heroku.com/ee-query-api.git/get_data' sending along  an options object in the following format (See Index html this repo for example fetch request)
+    Send POST request to 'https://ee-query-api.herokuapp.com/' sending along  an options object in the following format (See Index html this repo for example fetch request)
 
     const options = {
       method: 'post',
@@ -25,7 +24,7 @@ We are providing an easy to use API generate custom geospatial datasets by extra
     }
 
     Returns (JSON):
-        *NOTE: Number of keys = days in specified date range (date range starts from 0)*
+        __NOTE: Number of keys = days in specified date range (date range starts from 0)__
 
         Key: Day number <INTEGER>
         Value: Dictionary of results for each band for the day
@@ -38,6 +37,12 @@ We are providing an easy to use API generate custom geospatial datasets by extra
             ...
         }
 
+
+
+
+# Optimizations
+
+https://developers.google.com/earth-engine/tutorial_js_03
 
 # Installation and How To Use
 
