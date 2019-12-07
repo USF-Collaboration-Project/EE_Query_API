@@ -10,18 +10,18 @@ We are providing an easy to use API generate custom geospatial datasets by extra
 
 Send POST request to 'https://ee-query-api.herokuapp.com/' sending along  an options object in the following format (See Index html this repo for example fetch request)
 
-const options = {
-  method: 'post',
-  body: JSON.stringify({
-    imageName: value,
-    stateName: stateChoice,
-    countyName: countyChoice,
-  }),
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  }
-}
+    const options = {
+      method: 'post',
+      body: JSON.stringify({
+        imageName: value,
+        stateName: stateChoice,
+        countyName: countyChoice,
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }
 
 Returns (JSON):
     __NOTE: Number of keys = days in specified date range (date range starts from 0)__
