@@ -32,11 +32,10 @@ __NOTE: Number of keys = days in specified date range (date range starts from 0)
     Example:
 
     {
-        0: {<band_name>: <band_value>, <band_name>: <band_value>, <band_name>: <band_value>, <band_name>: <band_value>, <band_name>:<band_value>, …}
-        1: {<band_name>: <band_value>, <band_name>: <band_value>, <band_name>: <band_value>, <band_name>: <band_value>, <band_name>: <band_value>, …},
+        0: {<BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, <BAND_NAME>:<band_value>, …}
+        1: {<BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, <BAND_NAME>: <band_value>, …},
         ...
     }
-
 
 
 # Installation and How To Use
