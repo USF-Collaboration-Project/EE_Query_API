@@ -6,9 +6,9 @@ We are providing an easy to use API generate custom geospatial datasets by extra
 
 # API Endpoints
 
-### '/get_data', methods=['GET','POST']
+### /get_data, methods=['GET','POST']
 
-Send POST request to 'https://ee-query-api.herokuapp.com/' sending along  an options object in the following format (See Index html this repo for example fetch request)
+Send POST request to 'https://ee-query-api.herokuapp.com/' sending along  an options object in the following format:
 
     const options = {
       method: 'post',
@@ -23,8 +23,8 @@ Send POST request to 'https://ee-query-api.herokuapp.com/' sending along  an opt
       }
     }
 
-Returns (JSON):
-    __NOTE: Number of keys = days in specified date range (date range starts from 0)__
+Returns ---> JSON:
+__NOTE: Number of keys = days in specified date range (date range starts from 0)__
 
     Key: Day number <INTEGER>
     Value: Dictionary of results for each band for the day
