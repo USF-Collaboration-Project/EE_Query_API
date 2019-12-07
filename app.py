@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import json
 import pickle
-from ee_config import EE_CREDENTIALS
+# from ee_config import EE_CREDENTIALS
 
 import time
 
@@ -12,12 +12,10 @@ import ee
 
 from formatting_date_from_user.get_date_range import get_num_of_days
 
-# ee.Initialize()
-ee.Initialize(EE_CREDENTIALS)
+ee.Initialize()
+# ee.Initialize(EE_CREDENTIALS)
 # Trigger the authentication flow.
 # ee.Authenticate()
-
-
 
 app = Flask(__name__)
 
@@ -123,7 +121,7 @@ def get_data_from_date_image():
     time_start = time.time()
 
 
-    # NOTE: look into http://www.gevent.org/ to see how to paraell processing
+    # NOTE: look into http://www.gevent.org/ to implement paraell processing
     def _mapping_over_date_data(day):
 
         image = ee.Image(listOfImages.get(day)).clip(region)

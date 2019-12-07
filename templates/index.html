@@ -219,10 +219,11 @@
     fetch(queryURL, options).then((res) => {
       console.log("RETURNING RESPONSE *******************")
       console.log(res)
+      console.log(`response: ${res}`)
       return res.text()
     }).then((json) => {
       const data = JSON.parse(json)
-      console.log(data)
+      console.log(`${data}`data)
 
       if (queryType.value == 'COORDS'){
         handleCOORDSrequest(data)
