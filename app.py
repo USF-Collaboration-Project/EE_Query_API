@@ -15,7 +15,7 @@ from formatting_date_from_user.get_date_range import get_num_of_days
 ee.Initialize()
 # ee.Initialize(EE_CREDENTIALS)
 # Trigger the authentication flow.
-# ee.Authenticate()
+ee.Authenticate()
 
 app = Flask(__name__)
 
