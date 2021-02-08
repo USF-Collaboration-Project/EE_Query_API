@@ -14,7 +14,7 @@ google-cloud-core==1.0.3
 google-cloud-storage==1.19.0
 google-resumable-media==0.4.0
 googleapis-common-protos==1.6.0
-httplib2==0.13.1
+httplib2==0.19.0
 pyreadr==0.2.1
 uritemplate==3.0.0
 gunicorn
